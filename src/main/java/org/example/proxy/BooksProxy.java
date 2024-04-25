@@ -7,7 +7,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name= "books", url = "${name.service.url}")
 public interface BooksProxy {
 
-    @GetMapping("/")
-    String searchBooks(@RequestParam("q") String query, @RequestParam("key") String apiKey);
+    @GetMapping(value = "/",  produces = "application/json")
+    String searchBooks(
+            @RequestParam("q") String query,
+            @RequestParam("filter") String filter,
+            @RequestParam("key") String apiKey);
 
 }
