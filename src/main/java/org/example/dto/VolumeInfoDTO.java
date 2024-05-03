@@ -94,6 +94,14 @@ public class VolumeInfoDTO {
         this.imageLinks = imageLinks;
     }
 
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+    private String subtitle;
     private String publisher;
     private String publishedDate;
     private String description;
@@ -107,6 +115,7 @@ public class VolumeInfoDTO {
     @Override
     public String toString() {
         return "\n title : " + title +
+                "\n subtitle:" + subtitle +
                 "\n author: " + authors.toString() +
                 "\n publisher: " + publisher +
                 "\n publishedDate: " + publishedDate +
