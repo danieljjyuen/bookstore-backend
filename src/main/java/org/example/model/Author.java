@@ -11,7 +11,12 @@ public class Author {
         this.id = id;
         this.name = name;
     }
+    public Author(String name){
+        this.name = name;
+    }
+    public Author() {
 
+    }
     public long getId() {
         return id;
     }
