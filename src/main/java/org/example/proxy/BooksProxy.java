@@ -9,8 +9,11 @@ public interface BooksProxy {
 
     @GetMapping(value = "/",  produces = "application/json")
     String searchBooks(
+            //keyword example intitle:xyz+inauthor:xyz
             @RequestParam("q") String query,
             @RequestParam("filter") String filter,
+            @RequestParam("filter") String filter1,
+            @RequestParam("filter") String filter2,
             @RequestParam("key") String apiKey);
 
 }

@@ -28,8 +28,18 @@ CREATE TABLE IF NOT EXISTS author (
     name VARCHAR(255)
 );
 
+CREATE TABLE IF NOT EXISTS category (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255)
+);
 CREATE TABLE IF NOT EXISTS book_author (
     author INT,
     book INT,
     primary key(book, author)
+);
+
+CREATE TABLE IF NOT EXISTS book_category (
+    book INT,
+    category INT,
+    primary key(book, category)
 );

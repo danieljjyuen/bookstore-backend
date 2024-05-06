@@ -2,7 +2,6 @@ package org.example.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
@@ -52,19 +51,23 @@ public class Book {
 
     private Set<AuthorRef> authors = new HashSet<>();
 
+    public Set<CategoryRef> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(Set<CategoryRef> categories) {
+        this.categories = categories;
+    }
+
+    private Set<CategoryRef> categories = new HashSet<>();
 
     public void addAuthor(Author author) {
         this.authors.add(new AuthorRef(author.getId()));
     }
-//    @MappedCollection(idColumn = "book_pk", keyColumn = "author_id")
-//    public Set<Author> authors;
-//
-//    public Set<Author> getAuthors() {
-//        return authors;
-//    }
-//    public void setAuthors(Set<Author> authors){
-//        this.authors = authors;
-//    }
+
+    public void addCategory(Category category) {
+        this.categories.add(new CategoryRef(category.getId()));
+    }
 
     @Override
     public String toString() {

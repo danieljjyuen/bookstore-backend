@@ -6,10 +6,12 @@ import org.example.dto.ItemDTO;
 import org.example.model.Author;
 import org.example.model.Book;
 //import org.example.model.BookAuthor;
+import org.example.model.Category;
 import org.example.proxy.BooksProxy;
 import org.example.repositories.AuthorRepository;
 //import org.example.repositories.BookAuthorRepository;
 import org.example.repositories.BookRepository;
+import org.example.repositories.CategoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,33 +29,38 @@ public class BooksService {
     private final ObjectMapper objectMapper;
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
-    //private final BookAuthorRepository bookAuthorRepository;
+    private final CategoryRepository categoryRepository;
 
     public BooksService(String googleBooksApiKey, BooksProxy booksProxy,
                         ObjectMapper objectMapper, BookRepository bookRepository,
-                        AuthorRepository authorRepository
+                        AuthorRepository authorRepository, CategoryRepository categoryRepository
                         ){
         this.googleBooksApiKey = googleBooksApiKey;
         this.booksProxy = booksProxy;
         this.objectMapper = objectMapper;
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
-        //this.bookAuthorRepository = bookAuthorRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @Transactional
     public String searchBooks(String query)  {
         String modifiedQuery = query.replace(" ", "+");
-        String jsonResponse = booksProxy.searchBooks(modifiedQuery,"paid-ebooks", googleBooksApiKey);
+        String jsonResponse = booksProxy.searchBooks(modifiedQuery,"paid-ebooks", "ebooks", "full", googleBooksApiKey);
 
         try{
             //parse into object
             BookSearchResponseDTO response = objectMapper.readValue(jsonResponse, BookSearchResponseDTO.class);
             //System.out.println(response.toString());
             for(ItemDTO item : response.getItems()){
+                if(item.getSaleInfo().getListPrice() == null &&
+                    item.getSaleInfo().getRetailPrice() == null){
+                    continue;
+                }
                 Book newBook = convertToEntity(item);
                 //System.out.println(newBook);
-                saveBookWithAuthors(newBook, item.getVolumeInfo().getAuthors());
+                saveBookWithAuthorsCategories(
+                        newBook, item.getVolumeInfo().getAuthors(), item.getVolumeInfo().getCategories());
                 //bookRepository.save(newBook);
             }
 
@@ -65,35 +72,35 @@ public class BooksService {
         return jsonResponse;
     }
 
-    private void saveBookWithAuthors(Book book, List<String> authors) {
+    private void saveBookWithAuthorsCategories(Book book, List<String> authors, List<String> categories) {
 
         if(bookRepository.findById(book.getId()).isEmpty()) {
             // Save authors or retrieve existing ones
-            //Set<Author> savedAuthors = new HashSet<>();
-            //Set<Long> savedAuthorsId = new HashSet<>();
             for (String author : authors) {
                 Author existingAuthor = authorRepository.findByName(author);
                 if (existingAuthor != null) {
-                    //savedAuthors.add(existingAuthor);
-                    //savedAuthorsId.add(existingAuthor.getId());
                     book.addAuthor(existingAuthor);
                 } else {
                     Author savedAuthor = new Author(author);
                     authorRepository.save(savedAuthor);
-                    //savedAuthors.add(savedAuthor);
-                    //savedAuthorsId.add(savedAuthor.getId());
                     book.addAuthor(savedAuthor);
                 }
             }
-            //book.setAuthors(savedAuthors);
+            //add categories if exists
+
+            for(String category : categories) {
+                Category existingCategory = categoryRepository.findByName(category);
+                if(existingCategory != null ){
+                    book.addCategory(existingCategory);
+                } else {
+                    Category savedCategory = new Category(category);
+                    categoryRepository.save(savedCategory);
+                    book.addCategory(savedCategory);
+                }
+            }
 
             // Save the book
             Book savedBook = bookRepository.save(book);
-
-            //for each author map it to book id for join table
-//            for(Long authorId : savedAuthorsId) {
-//                bookAuthorRepository.save(new BookAuthor(savedBook.getPk(), authorId));
-//            }
         }
     }
 
