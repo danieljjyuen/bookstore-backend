@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS book (
 );
 CREATE TABLE IF NOT EXISTS customer (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255)
+    name VARCHAR(255),
+    username VARCHAR(255) UNIQUE
 );
 CREATE TABLE IF NOT EXISTS author (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -42,4 +43,10 @@ CREATE TABLE IF NOT EXISTS book_category (
     book INT,
     category INT,
     primary key(book, category)
+);
+
+CREATE TABLE IF NOT EXISTS customer_book (
+    customer INT,
+    book INT,
+    primary key(customer, book)
 );

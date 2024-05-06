@@ -5,11 +5,9 @@ import org.example.dto.BookSearchResponseDTO;
 import org.example.dto.ItemDTO;
 import org.example.model.Author;
 import org.example.model.Book;
-//import org.example.model.BookAuthor;
 import org.example.model.Category;
 import org.example.proxy.BooksProxy;
 import org.example.repositories.AuthorRepository;
-//import org.example.repositories.BookAuthorRepository;
 import org.example.repositories.BookRepository;
 import org.example.repositories.CategoryRepository;
 import org.springframework.stereotype.Service;
@@ -19,6 +17,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -61,15 +60,15 @@ public class BooksService {
                 //System.out.println(newBook);
                 saveBookWithAuthorsCategories(
                         newBook, item.getVolumeInfo().getAuthors(), item.getVolumeInfo().getCategories());
-                //bookRepository.save(newBook);
             }
-
 
         } catch(IOException e){
             e.printStackTrace();
+            return "Error Occured";
         }
 
-        return jsonResponse;
+        //return jsonResponse;
+        return "Search Completed";
     }
 
     private void saveBookWithAuthorsCategories(Book book, List<String> authors, List<String> categories) {
@@ -77,8 +76,10 @@ public class BooksService {
         if(bookRepository.findById(book.getId()).isEmpty()) {
             // Save authors or retrieve existing ones
             for (String author : authors) {
-                Author existingAuthor = authorRepository.findByName(author);
-                if (existingAuthor != null) {
+                Optional<Author> existingAuthorOptional = authorRepository.findByName(author);
+
+                if (existingAuthorOptional.isPresent()) {
+                    Author existingAuthor = existingAuthorOptional.get();
                     book.addAuthor(existingAuthor);
                 } else {
                     Author savedAuthor = new Author(author);
@@ -89,8 +90,9 @@ public class BooksService {
             //add categories if exists
 
             for(String category : categories) {
-                Category existingCategory = categoryRepository.findByName(category);
-                if(existingCategory != null ){
+                Optional<Category> existingCategoryOptional = categoryRepository.findByName(category);
+                if(existingCategoryOptional.isPresent() ){
+                    Category existingCategory = existingCategoryOptional.get();
                     book.addCategory(existingCategory);
                 } else {
                     Category savedCategory = new Category(category);

@@ -1,7 +1,6 @@
 package org.example.model;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.MappedCollection;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -10,14 +9,18 @@ public class Customer {
     @Id
     private long id;
 
+    private String username;
     private String name;
+    private Set<BookRef> library = new HashSet<>();
 
-    @MappedCollection(idColumn = "customer_id", keyColumn = "book_id")
-    private Set<Book> library;
-
-    public Customer(String name, Set<Book> library, long id) {
-        this.library = library;
+    public Customer(String username, String name,  long id) {
         this.id = id;
+        this.username = username;
+        this.name = name;
+    }
+
+    public Customer(String username, String name) {
+        this.username = username;
         this.name = name;
     }
 
@@ -25,12 +28,12 @@ public class Customer {
 
     }
 
-    public Customer(String name, Set<Book> library){
-        this.library = library;
+    public void addBook(Book book) {
+        this.library.add(new BookRef(book.getPk()));
     }
-    public Customer(String name) {
-        this.name = name;
-        this.library = new HashSet<Book>();
+
+    public Customer(String username){
+        this.username = username;
     }
 
     public long getId() {
@@ -41,11 +44,11 @@ public class Customer {
         this.id = id;
     }
 
-    public Set<Book> getLibrary() {
+    public Set<BookRef> getLibrary() {
         return library;
     }
 
-    public void setLibrary(Set<Book> library) {
+    public void setLibrary(Set<BookRef> library) {
         this.library = library;
     }
 
@@ -55,6 +58,12 @@ public class Customer {
 
     public String getName() {
         return name;
+    }
+    public String getUsername() {
+        return username;
+    }
+    public void setUsername(String username) {
+        this.username = username;
     }
 
 }
