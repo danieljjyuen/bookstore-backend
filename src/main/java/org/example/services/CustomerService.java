@@ -34,9 +34,18 @@ public class CustomerService {
         if(customerOptional.isEmpty()) {
             throw new RuntimeException("customer by username does not exist");
         }
-        //check for password match in the future when it is implemented
-        Customer customer = customerOptional.get();
-        return customer;
+        //check if password match
+        try{
+            Customer customer = customerOptional.get();
+            if(customer.getPassword().equals(password)){
+                return customer;
+            } else{
+                throw new RuntimeException("Incorrect password");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error has occurred");
+        }
+
     }
     //will implement borrow book before "buying" books
 

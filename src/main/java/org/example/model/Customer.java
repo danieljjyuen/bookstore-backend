@@ -12,16 +12,19 @@ public class Customer {
     private String username;
     private String name;
     private Set<BookRef> library = new HashSet<>();
+    private String password;
 
-    public Customer(String username, String name,  long id) {
+    public Customer(String username, String name, String password, long id) {
         this.id = id;
         this.username = username;
         this.name = name;
+        this.password = password;
     }
 
-    public Customer(String username, String name) {
+    public Customer(String username, String name, String password) {
         this.username = username;
         this.name = name;
+        this.password = password;
     }
 
     public Customer (){
@@ -64,6 +67,14 @@ public class Customer {
     }
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
 }
