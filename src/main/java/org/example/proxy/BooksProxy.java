@@ -15,5 +15,4 @@ public interface BooksProxy {
             @RequestParam("filter") String filter1,
             @RequestParam("filter") String filter2,
             @RequestParam("key") String apiKey);
-
 }
