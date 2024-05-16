@@ -23,7 +23,18 @@ CREATE TABLE IF NOT EXISTS customer (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255),
     username VARCHAR(255) UNIQUE,
-    password VARCHAR(255)
+    password VARCHAR(255),
+    enabled INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS authority (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) UNIQUE
+);
+CREATE TABLE IF NOT EXISTS authorities (
+    customer INT,
+    authority INT,
+    primary key(customer, authority)
 );
 CREATE TABLE IF NOT EXISTS author (
     id INT AUTO_INCREMENT PRIMARY KEY,

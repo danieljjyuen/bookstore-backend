@@ -13,18 +13,22 @@ public class Customer {
     private String name;
     private Set<BookRef> library = new HashSet<>();
     private String password;
+    private Set<AuthorityRef> authorities = new HashSet<>();
+    private int enabled;
 
     public Customer(String username, String name, String password, long id) {
         this.id = id;
         this.username = username;
         this.name = name;
         this.password = password;
+        this.enabled = 1;
     }
 
     public Customer(String username, String name, String password) {
         this.username = username;
         this.name = name;
         this.password = password;
+        this.enabled = 1;
     }
 
     public Customer (){
@@ -35,8 +39,29 @@ public class Customer {
         this.library.add(new BookRef(book.getPk()));
     }
 
+    public Set<AuthorityRef> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(Set<AuthorityRef> authorities) {
+        this.authorities = authorities;
+    }
+
+    public int getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(int enabled) {
+        this.enabled = enabled;
+    }
+
+    public void addAuthority(Authority authority) {
+        this.authorities.add(new AuthorityRef(authority.getId()));
+    }
+
     public Customer(String username){
         this.username = username;
+        this.enabled = 1;
     }
 
     public long getId() {
