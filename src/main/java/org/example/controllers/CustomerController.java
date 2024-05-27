@@ -1,11 +1,15 @@
 package org.example.controllers;
 
-import org.example.model.Book;
-import org.example.model.BorrowRequest;
-import org.example.model.LoginRequest;
-import org.example.model.Customer;
+import org.example.model.*;
 import org.example.services.CustomerService;
+import org.example.util.JwtTokenUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -14,6 +18,12 @@ import java.util.Set;
 @RestController
 public class CustomerController {
     private final CustomerService customerService;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     public CustomerController(CustomerService customerService){
         this.customerService = customerService;
@@ -26,17 +36,19 @@ public class CustomerController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Customer> login(@RequestBody LoginRequest loginRequest) {
-        String username = loginRequest.getUsername();
-        String password = loginRequest.getPassword();
-        Customer loggedCustomer = customerService.login(username, password);
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        try{
+            JwtResponse jwtResponse = customerService.login(loginRequest);
+            System.out.println(jwtResponse);
+            return ResponseEntity.ok(jwtResponse);
 
-        if(loggedCustomer != null) {
-            return ResponseEntity.ok(loggedCustomer);
-        }else {
-            return ResponseEntity.badRequest().build();
+        }catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Username not found");
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect password");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during login");
         }
-
     }
 
     @PostMapping("/addlibrary")

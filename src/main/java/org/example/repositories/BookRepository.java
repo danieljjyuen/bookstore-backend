@@ -19,7 +19,9 @@ public interface BookRepository extends CrudRepository<Book, Long> {
     @Query("SELECT b.* FROM book b JOIN book_author ba ON b.pk = ba.book JOIN author a ON ba.author = a.id WHERE b.title LIKE concat('%',:title,'%') AND a.name LIKE concat('%',:name,'%')")
     Set<Book> findByTitleContainingAndAuthorsName(String title, String name);
 
+    @Query("SELECT distinct * FROM book WHERE id =:id")
     Optional<Book> findById(String id);
+
     Optional<Book> findByPk(long id);
 
     //still need to be tested

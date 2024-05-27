@@ -1,11 +1,16 @@
 package org.example.services;
 
-import org.example.model.Authority;
-import org.example.model.Customer;
-import org.example.model.Book;
+import org.example.model.*;
 import org.example.repositories.AuthorityRepository;
 import org.example.repositories.BookRepository;
 import org.example.repositories.CustomerRepository;
+import org.example.util.JwtTokenUtil;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,15 +25,21 @@ public class CustomerService {
     private final BookRepository bookRepository;
     private final AuthorityRepository authorityRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserDetailsService userDetailsService;
+    private final JwtTokenUtil jwtTokenUtil;
 
     public CustomerService(CustomerRepository customerRepository,
                            BookRepository bookRepository,
                            AuthorityRepository authorityRepository,
-                           PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder,
+                           UserDetailsService userDetailsService,
+                           JwtTokenUtil jwtTokenUtil) {
         this.customerRepository = customerRepository;
         this.bookRepository = bookRepository;
         this.authorityRepository = authorityRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.userDetailsService = userDetailsService;
     }
     public Customer createCustomer(Customer customer) {
         //check if customer exist
@@ -57,23 +68,19 @@ public class CustomerService {
             return savedCustomer;
         }
 
-    public Customer login(String username, String password) {
-        Optional<Customer> customerOptional = customerRepository.findByUsername(username);
-        if(customerOptional.isEmpty()) {
-            throw new RuntimeException("customer by username does not exist");
-        }
-        //check if password match
-        try{
-            Customer customer = customerOptional.get();
+    public JwtResponse login(LoginRequest loginRequest) {
 
-            if(passwordEncoder.matches(password, customer.getPassword())){
-                return customer;
+            UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
+
+            if(passwordEncoder.matches(loginRequest.getPassword(), userDetails.getPassword())){
+                //generate jwt token
+                final String token = jwtTokenUtil.generateToken(userDetails);
+                System.out.println("token: " + token);
+                return new JwtResponse(token);
             } else{
-                throw new RuntimeException("Incorrect password");
+                throw new BadCredentialsException("Incorrect password");
             }
-        } catch (Exception e) {
-            throw new RuntimeException("Error has occurred");
-        }
+
 
     }
     //will implement borrow book before "buying" books
@@ -81,8 +88,14 @@ public class CustomerService {
     public void borrowBook(String username, String bookId){
            //check for both customer/book exist
         Optional<Customer> foundCustomerOptional = customerRepository.findByUsername(username);
+        System.out.println(foundCustomerOptional);
+        System.out.println(foundCustomerOptional.isPresent());
+
         Optional<Book> foundBookOptional = bookRepository.findById(bookId);
-        if(foundBookOptional.isPresent() && foundBookOptional.isPresent()){
+        System.out.println(foundBookOptional);
+        System.out.println(foundBookOptional.isPresent());
+
+        if(foundCustomerOptional.isPresent() && foundBookOptional.isPresent()){
             Customer foundCustomer = foundCustomerOptional.get();
             Book foundBook = foundBookOptional.get();
             foundCustomer.addBook(foundBook);
