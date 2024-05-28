@@ -11,6 +11,7 @@ import java.util.Set;
 
 @Repository
 public interface BookRepository extends CrudRepository<Book, Long> {
+    @Query("SELECT b.* FROM book b JOIN book_author ba ON b.pk = ba.book JOIN author a ON ba.author = a.id WHERE b.title LIKE concat('%',:keyword,'%')")
     Set<Book> findByTitleContaining(String keyword);
 
     @Query("SELECT b.* FROM book b JOIN book_author ba ON b.pk = ba.book JOIN author a ON ba.author = a.id WHERE a.name LIKE concat('%',:name,'%')")
