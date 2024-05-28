@@ -52,8 +52,9 @@ public class BooksService {
             BookSearchResponseDTO response = objectMapper.readValue(jsonResponse, BookSearchResponseDTO.class);
             //System.out.println(response.toString());
             for(ItemDTO item : response.getItems()){
-                if(item.getSaleInfo().getListPrice() == null &&
-                    item.getSaleInfo().getRetailPrice() == null){
+                if(item.getSaleInfo().getListPrice() == null ||
+                    item.getSaleInfo().getRetailPrice() == null ||
+                        item.getVolumeInfo().getAuthors() == null){
                     continue;
                 }
                 Book newBook = convertToEntity(item);
@@ -72,9 +73,10 @@ public class BooksService {
     }
 
     private void saveBookWithAuthorsCategories(Book book, List<String> authors, List<String> categories) {
-
+        System.out.println(book);
         if(bookRepository.findById(book.getId()).isEmpty()) {
             // Save authors or retrieve existing ones
+
             for (String author : authors) {
                 Optional<Author> existingAuthorOptional = authorRepository.findByName(author);
 
