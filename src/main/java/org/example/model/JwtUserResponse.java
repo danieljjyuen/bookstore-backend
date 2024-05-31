@@ -2,22 +2,18 @@ package org.example.model;
 
 public class JwtUserResponse {
     private final String token;
-    private final String username;
+    private final String name;
 
-    public JwtUserResponse(String token, String username) {
+    public JwtUserResponse(String token, String name) {
         this.token = token;
-        this.username = username;
+        this.name = name;
     }
 
     public String getToken() {
         return token;
     }
 
-    public String getUsername() {
-        return username;
+    public String getName() {
+        return name;
     }
-
-//    public String getName() {
-//        return name;
-//    }
 }

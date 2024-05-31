@@ -47,7 +47,7 @@ public class CustomerService {
             customer.setPassword(encoded);
             customer.setEnabled(1);
             Customer newCustomer = customerRepository.save(customer);
-            
+
             Optional<Authority> authorityOptional = authorityRepository.findByName("USER");
 
             if(authorityOptional.isPresent()){
