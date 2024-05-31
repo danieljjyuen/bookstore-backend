@@ -5,17 +5,13 @@ import org.example.repositories.AuthorityRepository;
 import org.example.repositories.BookRepository;
 import org.example.repositories.CustomerRepository;
 import org.example.util.JwtTokenUtil;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
-import java.sql.SQLOutput;
 import java.util.Optional;
 import java.util.Set;
 
@@ -51,8 +47,7 @@ public class CustomerService {
             customer.setPassword(encoded);
             customer.setEnabled(1);
             Customer newCustomer = customerRepository.save(customer);
-
-
+            
             Optional<Authority> authorityOptional = authorityRepository.findByName("USER");
 
             if(authorityOptional.isPresent()){
@@ -68,26 +63,31 @@ public class CustomerService {
             return savedCustomer;
         }
 
-    public JwtResponse login(LoginRequest loginRequest) {
-
+    public JwtUserResponse login(LoginRequest loginRequest) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
 
             if(passwordEncoder.matches(loginRequest.getPassword(), userDetails.getPassword())){
                 //generate jwt token
                 final String token = jwtTokenUtil.generateToken(userDetails);
+                String name = "";
+                Optional<Customer> customerOptional = customerRepository.findByUsername(loginRequest.getUsername());
+                if (customerOptional.isPresent()) {
+                    name = customerOptional.get().getName();
+                } else {
+                    throw new RuntimeException("customer not found");
+                }
                 System.out.println("token: " + token);
-                return new JwtResponse(token);
+                return new JwtUserResponse(token, name);
             } else{
                 throw new BadCredentialsException("Incorrect password");
             }
-
-
     }
     //will implement borrow book before "buying" books
 
-    public void borrowBook(String username, String bookId){
-           //check for both customer/book exist
-        Optional<Customer> foundCustomerOptional = customerRepository.findByUsername(username);
+    public void borrowBook(String bookId){
+        //fetched the userdetails from the jwt token from auth
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<Customer> foundCustomerOptional = customerRepository.findByUsername(userDetails.getUsername());
         System.out.println(foundCustomerOptional);
         System.out.println(foundCustomerOptional.isPresent());
 
@@ -95,6 +95,7 @@ public class CustomerService {
         System.out.println(foundBookOptional);
         System.out.println(foundBookOptional.isPresent());
 
+        //check for both customer/book exist
         if(foundCustomerOptional.isPresent() && foundBookOptional.isPresent()){
             Customer foundCustomer = foundCustomerOptional.get();
             Book foundBook = foundBookOptional.get();
@@ -105,8 +106,20 @@ public class CustomerService {
         }
     }
 
-    public Set<Book> getAllBooksInLibrary(Long customerId) {
-        Set<Book> library = bookRepository.findByCustomerId(customerId);
-        return library;
+    public Set<Book> getAllBooksInLibrary() {
+        //fetched the userdetails from the jwt token from auth
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //extract username
+        String username = userDetails.getUsername();
+        Optional<Customer> customerOptional = customerRepository.findByUsername(username);
+        if (customerOptional.isPresent()) {
+            Customer customer = customerOptional.get();
+            Set<Book> library = bookRepository.findByCustomerId(customer.getId());
+            return library;
+        } else {
+            throw new RuntimeException("customer not found");
+        }
     }
+
+
 }

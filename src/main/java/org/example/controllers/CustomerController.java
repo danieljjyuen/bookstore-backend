@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -38,9 +37,9 @@ public class CustomerController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try{
-            JwtResponse jwtResponse = customerService.login(loginRequest);
-            System.out.println(jwtResponse);
-            return ResponseEntity.ok(jwtResponse);
+            JwtUserResponse jwtUserResponse = customerService.login(loginRequest);
+            System.out.println(jwtUserResponse);
+            return ResponseEntity.ok(jwtUserResponse);
 
         }catch (UsernameNotFoundException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Username not found");
@@ -52,12 +51,9 @@ public class CustomerController {
     }
 
     @PostMapping("/addlibrary")
-    public ResponseEntity<String> borrowBook(@RequestBody BorrowRequest borrowRequest) {
-        String username = borrowRequest.getUsername();
-        String bookId = borrowRequest.getId();
-
-        try {
-            customerService.borrowBook(username, bookId);
+    public ResponseEntity<String> borrowBook(@RequestParam("bookid") String bookId) {
+           try {
+            customerService.borrowBook(bookId);
             return ResponseEntity.ok("added to library");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -65,8 +61,8 @@ public class CustomerController {
     }
 
     @GetMapping("/getlibrary")
-    public ResponseEntity<Set<Book>> getAllBooksInLibrary(@RequestParam("id") Long customerId) {
-        Set<Book> library = customerService.getAllBooksInLibrary(customerId);
+    public ResponseEntity<Set<Book>> getAllBooksInLibrary() {
+        Set<Book> library = customerService.getAllBooksInLibrary();
         return ResponseEntity.ok(library);
     }
 
