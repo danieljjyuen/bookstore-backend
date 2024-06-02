@@ -66,6 +66,12 @@ public class BookDBController {
         Set<Book> books = bookDBService.findByCustomerId(id);
         return ResponseEntity.ok(books);
     }
+
+    @GetMapping("/search/mylibrary")
+    public ResponseEntity<Set<Book>> findbyCustomer() {
+        Set<Book> books = bookDBService.findByCustomerUsername();
+        return ResponseEntity.ok(books);
+    }
 }
 
 
