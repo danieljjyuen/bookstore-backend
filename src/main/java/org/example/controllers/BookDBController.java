@@ -23,6 +23,7 @@ public class BookDBController {
     @GetMapping("/search/title")
     public ResponseEntity<Set<Book>> findByTitleContaining(@RequestParam("title") String title) {
         Set<Book> books = bookDBService.findByTitleContaining(title);
+        System.out.println(books);
         return ResponseEntity.ok(books);
     }
 

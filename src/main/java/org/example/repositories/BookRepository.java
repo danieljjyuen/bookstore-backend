@@ -11,13 +11,13 @@ import java.util.Set;
 
 @Repository
 public interface BookRepository extends CrudRepository<Book, Long> {
-    @Query("SELECT b.* FROM book b JOIN book_author ba ON b.pk = ba.book JOIN author a ON ba.author = a.id WHERE b.title LIKE concat('%',:keyword,'%')")
+    @Query("SELECT distinct b.* FROM book b JOIN book_author ba ON b.pk = ba.book JOIN author a ON ba.author = a.id WHERE b.title LIKE concat('%',:keyword,'%')")
     Set<Book> findByTitleContaining(String keyword);
 
-    @Query("SELECT b.* FROM book b JOIN book_author ba ON b.pk = ba.book JOIN author a ON ba.author = a.id WHERE a.name LIKE concat('%',:name,'%')")
+    @Query("SELECT distinct b.* FROM book b JOIN book_author ba ON b.pk = ba.book JOIN author a ON ba.author = a.id WHERE a.name LIKE concat('%',:name,'%')")
     Set<Book> findByAuthorsName(String name);
 
-    @Query("SELECT b.* FROM book b JOIN book_author ba ON b.pk = ba.book JOIN author a ON ba.author = a.id WHERE b.title LIKE concat('%',:title,'%') AND a.name LIKE concat('%',:name,'%')")
+    @Query("SELECT distinct b.* FROM book b JOIN book_author ba ON b.pk = ba.book JOIN author a ON ba.author = a.id WHERE b.title LIKE concat('%',:title,'%') AND a.name LIKE concat('%',:name,'%')")
     Set<Book> findByTitleContainingAndAuthorsName(String title, String name);
 
     @Query("SELECT distinct * FROM book WHERE id =:id")
@@ -26,7 +26,7 @@ public interface BookRepository extends CrudRepository<Book, Long> {
     Optional<Book> findByPk(long id);
 
     //still need to be tested
-    @Query("select b.* from book b join customer_book cb on b.pk = cb.book where cb.customer = :id")
+    @Query("select distinct b.* from book b join customer_book cb on b.pk = cb.book where cb.customer = :id")
     Set<Book> findByCustomerId(Long id);
 
 }

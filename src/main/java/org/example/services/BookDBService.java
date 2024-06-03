@@ -22,7 +22,6 @@ public class BookDBService {
     }
 
     public Set<Book> findByTitleContaining(String keyword) {
-        System.out.println(bookRepository.findByTitleContaining(keyword));
         return bookRepository.findByTitleContaining(keyword);
     }
 
