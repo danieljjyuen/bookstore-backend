@@ -45,7 +45,7 @@ public class BooksService {
     @Transactional
     public String searchBooks(String query)  {
         String modifiedQuery = query.replace(" ", "+");
-        String jsonResponse = booksProxy.searchBooks(modifiedQuery,"paid-ebooks", "ebooks", "full", googleBooksApiKey);
+        String jsonResponse = booksProxy.searchBooks(modifiedQuery,"paid-ebooks", "ebooks", "full", "40", googleBooksApiKey);
 
         try{
             //parse into object
