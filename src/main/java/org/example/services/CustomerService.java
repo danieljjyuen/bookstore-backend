@@ -88,6 +88,7 @@ public class CustomerService {
         //fetched the userdetails from the jwt token from auth
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Optional<Customer> foundCustomerOptional = customerRepository.findByUsername(userDetails.getUsername());
+
         System.out.println(foundCustomerOptional);
         System.out.println(foundCustomerOptional.isPresent());
 
@@ -106,7 +107,7 @@ public class CustomerService {
         }
     }
 
-    public Set<Book> getAllBooksInLibrary() {
+    public Set<BookOutput> getAllBooksInLibrary() {
         //fetched the userdetails from the jwt token from auth
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         //extract username
@@ -114,7 +115,7 @@ public class CustomerService {
         Optional<Customer> customerOptional = customerRepository.findByUsername(username);
         if (customerOptional.isPresent()) {
             Customer customer = customerOptional.get();
-            Set<Book> library = bookRepository.findByCustomerId(customer.getId());
+            Set<BookOutput> library = bookRepository.findByCustomerId(customer.getId());
             return library;
         } else {
             throw new RuntimeException("customer not found");

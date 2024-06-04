@@ -1,6 +1,7 @@
 package org.example.controllers;
 
 import org.example.model.Book;
+import org.example.model.BookOutput;
 import org.example.services.BookDBService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,22 +22,22 @@ public class BookDBController {
     }
 
     @GetMapping("/search/title")
-    public ResponseEntity<Set<Book>> findByTitleContaining(@RequestParam("title") String title) {
-        Set<Book> books = bookDBService.findByTitleContaining(title);
+    public ResponseEntity<Set<BookOutput>> findByTitleContaining(@RequestParam("title") String title) {
+        Set<BookOutput> books = bookDBService.findByTitleContaining(title);
         System.out.println(books);
         return ResponseEntity.ok(books);
     }
 
     @GetMapping("/search/author")
-    public ResponseEntity<Set<Book>> findByAuthorsName(@RequestParam("author") String author) {
-        Set<Book> books = bookDBService.findByAuthorsName(author);
+    public ResponseEntity<Set<BookOutput>> findByAuthorsName(@RequestParam("author") String author) {
+        Set<BookOutput> books = bookDBService.findByAuthorsName(author);
         return ResponseEntity.ok(books);
     }
 
     @GetMapping("/search/title-author")
-    public ResponseEntity<Set<Book>> findByTitleContainingAndAuthorsName(
+    public ResponseEntity<Set<BookOutput>> findByTitleContainingAndAuthorsName(
             @RequestParam("title") String title, @RequestParam("author") String author) {
-        Set<Book> books = bookDBService.findByTitleContainingAndAuthorsName(title, author);
+        Set<BookOutput> books = bookDBService.findByTitleContainingAndAuthorsName(title, author);
         return ResponseEntity.ok(books);
     }
 
@@ -63,14 +64,14 @@ public class BookDBController {
     }
 
     @GetMapping("/search/customerid")
-    public ResponseEntity<Set<Book>> findByCustomerId(@RequestParam("id") long id) {
-        Set<Book> books = bookDBService.findByCustomerId(id);
+    public ResponseEntity<Set<BookOutput>> findByCustomerId(@RequestParam("id") long id) {
+        Set<BookOutput> books = bookDBService.findByCustomerId(id);
         return ResponseEntity.ok(books);
     }
 
     @GetMapping("/search/mylibrary")
-    public ResponseEntity<Set<Book>> findbyCustomer() {
-        Set<Book> books = bookDBService.findByCustomerUsername();
+    public ResponseEntity<Set<BookOutput>> findbyCustomer() {
+        Set<BookOutput> books = bookDBService.findByCustomerUsername();
         return ResponseEntity.ok(books);
     }
 }

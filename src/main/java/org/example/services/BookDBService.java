@@ -1,6 +1,7 @@
 package org.example.services;
 
 import org.example.model.Book;
+import org.example.model.BookOutput;
 import org.example.model.Customer;
 import org.example.repositories.BookRepository;
 import org.example.repositories.CustomerRepository;
@@ -21,15 +22,15 @@ public class BookDBService {
         this.customerRepository = customerRepository;
     }
 
-    public Set<Book> findByTitleContaining(String keyword) {
+    public Set<BookOutput> findByTitleContaining(String keyword) {
         return bookRepository.findByTitleContaining(keyword);
     }
 
-    public Set<Book> findByAuthorsName(String name) {
+    public Set<BookOutput> findByAuthorsName(String name) {
         return bookRepository.findByAuthorsName(name);
     }
 
-    public Set<Book> findByTitleContainingAndAuthorsName(String title, String name) {
+    public Set<BookOutput> findByTitleContainingAndAuthorsName(String title, String name) {
         return bookRepository.findByTitleContainingAndAuthorsName(title, name);
     }
 
@@ -41,11 +42,11 @@ public class BookDBService {
         return bookRepository.findByPk(id);
     }
 
-    public Set<Book> findByCustomerId(long id) {
+    public Set<BookOutput> findByCustomerId(long id) {
         return bookRepository.findByCustomerId(id);
     }
 
-    public Set<Book> findByCustomerUsername() {
+    public Set<BookOutput> findByCustomerUsername() {
         try {
             //extract username from jwt token/security context
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

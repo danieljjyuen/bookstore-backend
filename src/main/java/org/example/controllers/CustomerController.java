@@ -61,8 +61,8 @@ public class CustomerController {
     }
 
     @GetMapping("/getlibrary")
-    public ResponseEntity<Set<Book>> getAllBooksInLibrary() {
-        Set<Book> library = customerService.getAllBooksInLibrary();
+    public ResponseEntity<Set<BookOutput>> getAllBooksInLibrary() {
+        Set<BookOutput> library = customerService.getAllBooksInLibrary();
         return ResponseEntity.ok(library);
     }
 

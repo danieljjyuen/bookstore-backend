@@ -1,114 +1,16 @@
 package org.example.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
-
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
 
-@Table("book")
-public class Book {
-    @Id
+public class BookOutput {
     private long pk;
-
-    private String id;
-    private String title;
-    private String subtitle;
-    private String publisher;
-    @Column("publisher_date")
-    private String publisherDate;
-    private String description;
-    private int pageCount;
-    @Column("small_thumbnail")
-    private String smallThumbnail;
-    private String thumbnail;
-    @Column("list_price_amount")
-    private BigDecimal listPriceAmount;
-    @Column("list_price_currency")
-    private String listPriceCurrency;
-    @Column("retail_price_amount")
-    private BigDecimal retailPriceAmount;
-    @Column("retail_price_currency")
-    private String retailPriceCurrency;
-    @Column("buy_link")
-    private String buyLink;
-    @Column("average_rating")
-    private int averageRating;
-    @Column("ratings_count")
-    private int ratingsCount;
-    private String language;
-    private String kind;
-
-    public void setPk(long pk) {
-        this.pk = pk;
-    }
 
     public long getPk() {
         return pk;
     }
 
-    private Set<AuthorRef> authors = new HashSet<>();
-
-    public Set<AuthorRef> getAuthors() {
-        return authors;
-    }
-
-    public void setAuthors(Set<AuthorRef> authors) {
-        this.authors = authors;
-    }
-
-    public Set<CategoryRef> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(Set<CategoryRef> categories) {
-        this.categories = categories;
-    }
-
-    private Set<CategoryRef> categories = new HashSet<>();
-
-    public void addAuthor(Author author) {
-        this.authors.add(new AuthorRef(author.getId()));
-    }
-
-    public void addCategory(Category category) {
-        this.categories.add(new CategoryRef(category.getId()));
-    }
-
-    @Override
-    public String toString() {
-        return "Book{" +
-                "pk=" + pk +
-                ", id='" + id + '\'' +
-                ", title='" + title + '\'' +
-                ", subtitle='" + subtitle + '\'' +
-                ", publisher='" + publisher + '\'' +
-                ", publisherDate='" + publisherDate + '\'' +
-                ", description='" + description + '\'' +
-                ", pageCount=" + pageCount +
-                ", smallThumbnail='" + smallThumbnail + '\'' +
-                ", thumbnail='" + thumbnail + '\'' +
-                ", listPriceAmount=" + listPriceAmount +
-                ", listPriceCurrency='" + listPriceCurrency + '\'' +
-                ", retailPriceAmount=" + retailPriceAmount +
-                ", retailPriceCurrency='" + retailPriceCurrency + '\'' +
-                ", buyLink='" + buyLink + '\'' +
-                ", averageRating=" + averageRating +
-                ", ratingsCount=" + ratingsCount +
-                ", language='" + language + '\'' +
-                ", kind='" + kind + '\'' +
-                ", authors=" + authors +
-                '}';
-    }
-
-    public String getSmallThumbnail() {
-        return smallThumbnail;
-    }
-
-    public void setSmallThumbnail(String smallThumbnail) {
-        this.smallThumbnail = smallThumbnail;
+    public void setPk(long pk) {
+        this.pk = pk;
     }
 
     public String getId() {
@@ -165,6 +67,14 @@ public class Book {
 
     public void setPageCount(int pageCount) {
         this.pageCount = pageCount;
+    }
+
+    public String getSmallThumbnail() {
+        return smallThumbnail;
+    }
+
+    public void setSmallThumbnail(String smallThumbnail) {
+        this.smallThumbnail = smallThumbnail;
     }
 
     public String getThumbnail() {
@@ -247,8 +157,31 @@ public class Book {
         this.kind = kind;
     }
 
-    public Book(String kind, String id, String title, String subtitle, String publisher, String publisherDate, String description, int pageCount, String smallThumbnail, String thumbnail, BigDecimal listPriceAmount, String listPriceCurrency, BigDecimal retailPriceAmount, String retailPriceCurrency, String buyLink, int averageRating, int ratingsCount, String language) {
-        this.kind = kind;
+    public String getAuthors() {
+        return authors;
+    }
+
+    public void setAuthors(String authors) {
+        this.authors = authors;
+    }
+
+    public String getCategories() {
+        return categories;
+    }
+
+    public void setCategories(String categories) {
+        this.categories = categories;
+    }
+
+    private String id;
+    private String title;
+    private String subtitle;
+
+    public BookOutput() {
+    }
+
+    public BookOutput(long pk, String id, String title, String subtitle, String publisher, String publisherDate, String description, int pageCount, String smallThumbnail, String thumbnail, BigDecimal listPriceAmount, String listPriceCurrency, BigDecimal retailPriceAmount, String retailPriceCurrency, String buyLink, int averageRating, int ratingsCount, String language, String kind, String authors, String categories) {
+        this.pk = pk;
         this.id = id;
         this.title = title;
         this.subtitle = subtitle;
@@ -266,8 +199,27 @@ public class Book {
         this.averageRating = averageRating;
         this.ratingsCount = ratingsCount;
         this.language = language;
+        this.kind = kind;
+        this.authors = authors;
+        this.categories = categories;
     }
-    public Book() {
 
-    }
+    private String publisher;
+    private String publisherDate;
+    private String description;
+    private int pageCount;
+    private String smallThumbnail;
+    private String thumbnail;
+    private BigDecimal listPriceAmount;
+    private String listPriceCurrency;
+    private BigDecimal retailPriceAmount;
+    private String retailPriceCurrency;
+    private String buyLink;
+    private int averageRating;
+    private int ratingsCount;
+    private String language;
+    private String kind;
+    private String authors;
+    private String categories;
+
 }
