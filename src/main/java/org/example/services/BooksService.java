@@ -45,23 +45,34 @@ public class BooksService {
     @Transactional
     public String searchBooks(String query)  {
         String modifiedQuery = query.replace(" ", "+");
-        String jsonResponse = booksProxy.searchBooks(modifiedQuery,"paid-ebooks", "ebooks", "full", "40", googleBooksApiKey);
+        int start = 0;
+        String jsonResponse = booksProxy.searchBooks(modifiedQuery,"paid-ebooks", "ebooks", "full", String.valueOf(start), "40", googleBooksApiKey);
 
         try{
-            //parse into object
-            BookSearchResponseDTO response = objectMapper.readValue(jsonResponse, BookSearchResponseDTO.class);
-            //System.out.println(response.toString());
-            for(ItemDTO item : response.getItems()){
-                if(item.getSaleInfo().getListPrice() == null ||
-                    item.getSaleInfo().getRetailPrice() == null ||
-                        item.getVolumeInfo().getAuthors() == null){
-                    continue;
+            BookSearchResponseDTO response;
+            do {
+                //parse into object
+                response = objectMapper.readValue(jsonResponse, BookSearchResponseDTO.class);
+                //System.out.println("TOTAL ITEMS------" + response.getTotalItems());
+
+
+                //System.out.println(response.toString());
+                for (ItemDTO item : response.getItems()) {
+                    if (item.getSaleInfo().getListPrice() == null ||
+                            item.getSaleInfo().getRetailPrice() == null ||
+                            item.getVolumeInfo().getAuthors() == null) {
+                        continue;
+                    }
+                    Book newBook = convertToEntity(item);
+                    //System.out.println(newBook);
+                    saveBookWithAuthorsCategories(
+                            newBook, item.getVolumeInfo().getAuthors(), item.getVolumeInfo().getCategories());
+                    //System.out.println(count);
+
                 }
-                Book newBook = convertToEntity(item);
-                //System.out.println(newBook);
-                saveBookWithAuthorsCategories(
-                        newBook, item.getVolumeInfo().getAuthors(), item.getVolumeInfo().getCategories());
-            }
+                start+=40;
+                System.out.println("------------"+ start);
+            } while(start < response.getTotalItems());
 
         } catch(IOException e){
             e.printStackTrace();
@@ -73,7 +84,7 @@ public class BooksService {
     }
 
     private void saveBookWithAuthorsCategories(Book book, List<String> authors, List<String> categories) {
-        System.out.println(book);
+        //System.out.println(book);
         if(bookRepository.findById(book.getId()).isEmpty()) {
             // Save authors or retrieve existing ones
 
@@ -105,6 +116,7 @@ public class BooksService {
 
             // Save the book
             Book savedBook = bookRepository.save(book);
+            System.out.println(savedBook.getTitle());
         }
     }
 

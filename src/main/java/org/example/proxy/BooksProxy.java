@@ -14,6 +14,7 @@ public interface BooksProxy {
             @RequestParam("filter") String filter,
             @RequestParam("filter") String filter1,
             @RequestParam("filter") String filter2,
+            @RequestParam("startIndex") String startIndex,
             @RequestParam("maxResults") String max,
             @RequestParam("key") String apiKey);
 }
