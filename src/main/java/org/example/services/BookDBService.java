@@ -9,6 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -62,4 +64,36 @@ public class BookDBService {
         }
     }
 
+    //create response
+    private Map<String, Object> createPaginatedResponse(Set<BookOutput> books, long totalBooks, int page, int size) {
+        int totalPages = (int) Math.ceil((double) totalBooks / size);
+        Map<String, Object> response = new HashMap<>();
+        response.put("books", books);
+        response.put("currentPage", page);
+        response.put("totalPages", totalPages);
+        response.put("totalBooks", totalBooks);
+        return response;
+    }
+
+    public Map<String, Object> findBooksByTitleContainingWithPagination(String keyword, int page, int size) {
+        int offset = page * size;
+        Set<BookOutput> books = bookRepository.findByTitleContainingOffset(keyword, offset, size);
+        long totalBooks = bookRepository.findByTitleContainingCount(keyword);
+
+        return createPaginatedResponse(books, totalBooks, page, size);
+    }
+
+    public Map<String, Object> findBooksByAuthorNameWithPagination(String author, int page, int size) {
+        int offset = page * size;
+        Set<BookOutput> books = bookRepository.findByAuthorsNameOffset(author, offset, size);
+        long totalBooks = bookRepository.findByAuthorsNameCount(author);
+        return createPaginatedResponse(books, totalBooks, page, size);
+    }
+
+    public Map<String, Object> findBooksByTitleAndAuthorWithPagination(String title, String author, int page, int size) {
+        int offset = page * size;
+        Set<BookOutput> books = bookRepository.findByTitleContainingAndAuthorsNameOffset(title, author, offset, size);
+        long totalBooks = bookRepository.findByTitleContainingAndAuthorsNameCount(title, author);
+        return createPaginatedResponse(books, totalBooks, page, size);
+    }
 }

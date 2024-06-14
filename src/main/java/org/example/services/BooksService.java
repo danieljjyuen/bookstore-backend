@@ -113,7 +113,6 @@ public class BooksService {
                     book.addCategory(savedCategory);
                 }
             }
-
             // Save the book
             Book savedBook = bookRepository.save(book);
             System.out.println(savedBook.getTitle());

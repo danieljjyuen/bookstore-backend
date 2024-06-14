@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -74,6 +75,29 @@ public class BookDBController {
         Set<BookOutput> books = bookDBService.findByCustomerUsername();
         return ResponseEntity.ok(books);
     }
+
+    @GetMapping("/unifiedsearch")
+    public ResponseEntity<Map<String, Object>> searchBooks(
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "author", required = false) String author,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        Map<String, Object> response;
+
+        if (title != null && author == null) {
+            response = bookDBService.findBooksByTitleContainingWithPagination(title, page, size);
+        } else if (title == null && author != null) {
+            response = bookDBService.findBooksByAuthorNameWithPagination(author, page, size);
+        } else if (title != null && author != null) {
+            response = bookDBService.findBooksByTitleAndAuthorWithPagination(title, author, page, size);
+        } else {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        return ResponseEntity.ok(response);
+    }
+
 }
 
 
