@@ -63,6 +63,7 @@ public class ProjectConfig {
                     auth.requestMatchers("/api/customers/login").permitAll();
                             auth.requestMatchers("/api/customers/create").permitAll();
                             auth.requestMatchers("/api/customers/login").permitAll();
+                            auth.requestMatchers("http://localhost:4566/**").permitAll();
                             auth.requestMatchers("/error").permitAll();
                             auth.requestMatchers("/books").permitAll();
                             auth.requestMatchers("/api/books/**").permitAll();

@@ -45,4 +45,7 @@ target/
 *.iws
 *.class
 
+/aws
+/localstack
+/
 application.properties

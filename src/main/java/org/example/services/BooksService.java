@@ -1,5 +1,10 @@
 package org.example.services;
 
+import com.amazonaws.services.sqs.AmazonSQSAsync;
+import com.amazonaws.services.sqs.model.AmazonSQSException;
+import org.example.services.SqsService;
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.dto.BookSearchResponseDTO;
 import org.example.dto.ItemDTO;
@@ -19,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class BooksService {
@@ -29,11 +35,15 @@ public class BooksService {
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
     private final CategoryRepository categoryRepository;
+    private final AmazonSQS amazonSQS;
+    private final SqsService sqsService;
 
-    public BooksService(String googleBooksApiKey, BooksProxy booksProxy,
+    public BooksService(AmazonSQS customAmazonSQS, SqsService sqsService, String googleBooksApiKey, BooksProxy booksProxy,
                         ObjectMapper objectMapper, BookRepository bookRepository,
                         AuthorRepository authorRepository, CategoryRepository categoryRepository
                         ){
+        this.amazonSQS = customAmazonSQS;
+        this.sqsService = sqsService;
         this.googleBooksApiKey = googleBooksApiKey;
         this.booksProxy = booksProxy;
         this.objectMapper = objectMapper;
@@ -43,7 +53,29 @@ public class BooksService {
     }
 
     @Transactional
-    public String searchBooks(String query)  {
+    public CompletableFuture<String> searchBooks(String query) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                System.out.println("Search books -----| 1");
+                String queueUrl = sqsService.getQueueUrl();
+                SendMessageRequest sendMessageRequest = new SendMessageRequest()
+                        .withQueueUrl("http://localhost:4566/000000000000/google-books-queue")
+                        .withMessageBody(query);
+                System.out.println("Queue URL: " + queueUrl + " SendMessageRequest: " + sendMessageRequest);
+                amazonSQS.sendMessage(sendMessageRequest);
+                System.out.println("Search books -----| 2");
+                return "Search request queued";
+            } catch (AmazonSQSException e) {
+                e.printStackTrace();
+                return "Failed to queue search request";
+            }
+        });
+    }
+
+
+    @Transactional
+    public String processSearch(String query) {
+        System.out.println("process search -----|");
         String modifiedQuery = query.replace(" ", "+");
         int start = 0;
         String jsonResponse = booksProxy.searchBooks(modifiedQuery,"paid-ebooks", "ebooks", "full", String.valueOf(start), "40", googleBooksApiKey);
@@ -78,7 +110,7 @@ public class BooksService {
             e.printStackTrace();
             return "Error Occured";
         }
-
+        System.out.println("SEARCH COMPLETE -----|");
         //return jsonResponse;
         return "Search Completed";
     }
