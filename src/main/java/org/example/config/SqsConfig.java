@@ -29,7 +29,7 @@ public class SqsConfig {
     private String secretKey;
 
     @Value("${cloud.aws.endpoint.sqs}")
-    private String sqsEndpoint; // Assuming this is where you specify your SQS endpoint URL
+    private String sqsEndpoint;
 
     @Bean
     public AmazonSQS customAmazonSQS() {
